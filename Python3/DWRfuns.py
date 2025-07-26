@@ -1,9 +1,8 @@
 import numpy as np
 import glob
-import sys
+import os
 import time 
 from scipy import sparse
-# from scipy.signal import find_peaks
 import scipy.sparse.linalg
 from ypstruct import struct
     
@@ -338,12 +337,8 @@ def postprocessingDWR_ll(geom, mesh, Bulk, iteParams, IO):
     resultStruct = struct()
 
     expFilenames = []
-    if sys.platform == 'win32':
-        for name  in glob.glob(IO.inputFilepath + '\\*_exp.txt'):
-            expFilenames.append(name)
-    else:
-        for name  in glob.glob(inputFilepath + '/*_exp.txt'):
-            expFilenames.append(name)
+    pattern = os.path.join(IO.inputFilepath, '*_exp.txt')
+    expFilenames = glob.glob(pattern)
             
     # Initializing optional output data
     iterationsTimesData = []
@@ -364,16 +359,13 @@ def postprocessingDWR_ll(geom, mesh, Bulk, iteParams, IO):
     # for-end looping on each input data file (*_exp.txt file)
     for ite in range(len(expFilenames)):
         print('Analyzing file {}...\n'.format(ite+1))
-        if sys.platform == 'win32':
-            expFileData = np.genfromtxt(expFilenames[ite].split('\\')[-1], delimiter='\t', dtype=None)
-        else:
-            expFileData = np.genfromtxt(expFilenames[ite].split('/')[-1], delimiter='\t', dtype=None)
-            
-        if len(expFileData.shape) == 1:
-            expFileData = np.array([expFileData])    
-        # Prompting the number of lines to process in the file
+        
+        expFileData = np.genfromtxt(expFilenames[ite], delimiter='\t', dtype=None)
+        if expFileData.ndim == 1:
+            expFileData = np.array([expFileData])
         expFileData = expFileData.T
-        filasexpFiledata = int(expFileData[0].shape[0])        
+        filasexpFiledata = expFileData.shape[1]               
+
         print('Lines: {} \n'.format(filasexpFiledata))
 
         # for-end looping on each line under analysis
@@ -466,9 +458,7 @@ def postprocessingDWR_ll(geom, mesh, Bulk, iteParams, IO):
             print('Iterative process time = {} s\n'.format(timeElapsedIT[lin]))
             Bou_final[lin] = Bou[-1]
             ARcalc_final[lin] = ARcalc[-1]
-            delta_AR_final[lin] = np.arctan(np.imag(ARcalc[-1])/np.real(ARcalc[-1]))
-            if delta_AR_final[lin] < 0:
-                delta_AR_final[lin] = delta_AR_final[lin] + np.pi
+            delta_AR_final[lin] = np.angle(ARcalc[-1])
             errorAR_final[lin] = errorAR[-1]
             lambda_final[lin] = lmbd
             G_linear[lin][0] = ARexp/(4*np.pi*((geom.R5**2*geom.R1**2/(geom.R5**2 - geom.R1**2)) + (geom.R6**2*geom.R3**2/(geom.R3**2 - geom.R6**2))))
@@ -480,19 +470,13 @@ def postprocessingDWR_ll(geom, mesh, Bulk, iteParams, IO):
         eta_s_final = Bou_final*geom.R6*(Bulk.eta_bulk1 + Bulk.eta_bulk2)# converged viscoelasticity
         G_complex = 1j*Bou_final*2*np.pi*freq*geom.R6*(Bulk.eta_bulk1 + Bulk.eta_bulk2)# converged dynamic surface moduli    
         
-        # Exporting results to the output data file
-        # aa = np.array(expFileData)
-        # bb = [tup[0] for tup in aa]
-        # cc = [tup[IO.colIndexFreq] for tup in bb]
-        
         results = (np.array([expFileData[IO.colIndexFreq], np.real(G_complex), np.imag(G_complex), np.real(eta_s_final),
                                 np.imag(eta_s_final), np.real(Bou_final), np.imag(Bou_final), np.absolute(ARcalc_final),
                                 delta_AR_final, timeElapsedIT, lambda_final]))
         results = results.T
-        if sys.platform == 'win32':
-            np.savetxt(IO.outputFilepath+'\\'+expFilenames[ite].split('\\')[-1].replace('exp','out'), results, fmt='%.14f', delimiter='\t')
-        else:
-            np.savetxt(IO.outputFilepath+'/'+expFilenames[ite].split('/')[-1].replace('exp','out'), results, fmt='%.14f', delimiter='\t')
+        base_filename = os.path.basename(expFilenames[ite]).replace('exp', 'out')
+        output_path = os.path.join(IO.outputFilepath, base_filename)
+        np.savetxt(output_path, results, fmt='%.14f', delimiter='\t')
         
         # Optional structure output data
         FreqData.append(freq)
