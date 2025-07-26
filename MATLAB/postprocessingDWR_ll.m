@@ -134,10 +134,7 @@ for ite = 1:length(expFilenames)
         fprintf('Iterative process time = %s s\n\n', num2str(timeElapsedIT(lin)))
         Bou_final(lin) = Bou(lambda);
         ARcalc_final(lin) = ARcalc(lambda);
-        delta_AR_final(lin) = atan(imag(ARcalc(lambda))/real(ARcalc(lambda)));
-        if delta_AR_final(lin) < 0
-            delta_AR_final(lin) = delta_AR_final(lin) + pi;
-        end    
+        delta_AR_final(lin) = angle(ARcalc(lambda));
         errorAR_final(lin) = errorAR(lambda);
         lambda_final(lin) = lambda;
         G_linear(lin, 1) = ARexp/(4*pi*((geom.R5^2*geom.R1^2/(geom.R5^2 - geom.R1^2)) + (geom.R6^2*geom.R3^2/(geom.R3^2 - geom.R6^2))));
