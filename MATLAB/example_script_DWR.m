@@ -18,7 +18,7 @@ geom.medium.R4 = geom.medium.R3 + geom.medium.stepW;% [m]
 geom.medium.R2 = geom.medium.R1 - geom.medium.stepW;% [m]
 geom.medium.G1 = geom.medium.R5 - geom.medium.R1;% [m]
 geom.medium.G2 = geom.medium.R3 - geom.medium.R6;% [m]
-geom.medium.inertia = (0.1 + 0.002)/1000;% system (rotor + DWR) inertia [Kg·m^2]
+geom.medium.inertia = (0.1 + 0.002)/1000;% system (rotor + DWR) inertia [KgÂ·m^2]
 geom.medium.ICorrected = true;% True if torque data are inertia corrected
 
 % Mesh parameters
@@ -49,8 +49,6 @@ IO.colIndexAR = 2;% ordinal number of the data of the column that contains the m
 IO.colIndexDelta = 3;% ordinal number of the data of the column that contains the modulus of the phase shift
 IO.colIndexAmp = 6;% ordinal number of the data of the column that contains the angular amplitude
 IO.colIndexTorq = 4;% ordinal number of the data of the column that contains the Torque amplitude
-IO.colIndexRho = 8;% ordinal number of the data of the column that contains the bulk density
-IO.colIndexEta = 9;% ordinal number of the data of the column that contains the bulk viscosity
 IO.inputFilepath = pwd;% input filepath
 IO.outputFilepath = pwd;% output filepath
 
