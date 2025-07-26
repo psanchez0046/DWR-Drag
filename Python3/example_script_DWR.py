@@ -43,10 +43,8 @@ IO = struct()
 IO.colIndexFreq = 0# ordinal number of the data of the column that contains the modulus of the frequency
 IO.colIndexAR = 1# ordinal number of the data of the column that contains the modulus of the amplitude ratio
 IO.colIndexDelta = 2# ordinal number of the data of the column that contains the modulus of the phase shift
-IO.colIndexAmp = 5# ordinal number of the data of the column that contains the angular amplitude
+IO.colIndexAmp = 4# ordinal number of the data of the column that contains the angular amplitude
 IO.colIndexTorq = 3# ordinal number of the data of the column that contains the Torque amplitude
-IO.colIndexRho = 7# ordinal number of the data of the column that contains the bulk density
-IO.colIndexEta = 8# ordinal number of the data of the column that contains the bulk viscosity
 IO.inputFilepath = os.getcwd()# input filepath
 IO.outputFilepath = os.getcwd()# output filepath
 
